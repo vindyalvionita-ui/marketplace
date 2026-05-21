@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enter Product — The Collection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Didact+Gothic&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --ivory: #faf7f2;
+      --gold: #b8975a;
+      --gold-light: #d4b483;
+      --charcoal: #1a1a18;
+      --stone: #8a8478;
+      --border: rgba(184,151,90,0.25);
+      --border-focus: rgba(184,151,90,0.7);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--ivory);
+      color: var(--charcoal);
+      font-family: 'Didact Gothic', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle noise texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 64px 40px 44px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.1s;
+    }
+
+    .brand-rule span {
+      display: block;
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+
+    .brand-rule span:last-child {
+      background: linear-gradient(to left, transparent, var(--gold));
+    }
+
+    .brand-rule svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--gold);
+    }
+
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+      line-height: 1;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.25s;
+    }
+
+    header p {
+      margin-top: 14px;
+      font-size: 0.72rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--stone);
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.4s;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 28px;
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--stone);
+      text-decoration: none;
+      transition: color 0.3s ease;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.52s;
+    }
+
+    .btn-back svg {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-back:hover { color: var(--gold); }
+    .btn-back:hover svg { transform: translateX(-3px); }
+
+    /* ── Form container ── */
+    .form-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 72px 40px 96px;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.5s;
+    }
+
+    .form-section-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .form-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Field groups ── */
+    .field-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 32px;
+    }
+
+    .field-group.single {
+      grid-template-columns: 1fr;
+    }
+
+    .field {
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 10px;
+      transition: color 0.3s ease;
+    }
+
+    .field:focus-within label {
+      color: var(--gold);
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 0 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.35s ease;
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: rgba(138,132,120,0.45);
+      font-style: italic;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-bottom-color: var(--gold);
+    }
+
+    /* Animated underline */
+    .field-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      pointer-events: none;
+    }
+
+    .field:focus-within .field-line {
+      transform: scaleX(1);
+    }
+
+    .field textarea {
+      resize: none;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    /* Select custom arrow */
+    .field-select-wrap {
+      position: relative;
+    }
+
+    .field-select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid var(--stone);
+      pointer-events: none;
+      transition: border-top-color 0.3s ease;
+    }
+
+    .field:focus-within .field-select-wrap::after {
+      border-top-color: var(--gold);
+    }
+
+    /* ── Submit area ── */
+    .submit-area {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .submit-note {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--stone);
+      line-height: 1.7;
+    }
+
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ivory);
+      background: var(--charcoal);
+      border: 1px solid var(--charcoal);
+      padding: 14px 32px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease;
+      white-space: nowrap;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 0;
+    }
+
+    .btn-submit:hover:not(:disabled)::before {
+      transform: scaleX(1);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      border-color: var(--gold);
+    }
+
+    .btn-submit > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-submit svg {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-submit:hover:not(:disabled) svg {
+      transform: translateX(3px);
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-arrow { display: none; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(250,247,242,0.95);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 40px;
+      backdrop-filter: blur(4px);
+    }
+
+    .success-overlay.visible {
+      display: flex;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+      animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.1s;
+      opacity: 0;
+    }
+
+    .success-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 1.5;
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+      animation: drawCheck 0.5s ease forwards 0.45s;
+    }
+
+    .success-overlay h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 2.2rem;
+      letter-spacing: 0.12em;
+      color: var(--charcoal);
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.3s;
+    }
+
+    .success-overlay p {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--stone);
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.45s;
+    }
+
+    .success-redirect-note {
+      margin-top: 24px;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.6s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--stone);
+    }
+
+    @media (max-width: 600px) {
+      .form-wrap { padding: 48px 20px 72px; }
+      header { padding: 48px 20px 36px; }
+      .field-group { grid-template-columns: 1fr; gap: 0; }
+      .submit-area { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay" role="status" aria-live="polite">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24"><polyline points="4,12 9,17 20,7"/></svg>
+  </div>
+  <h2>Product Entered</h2>
+  <p>Your item has been added to the collection</p>
+  <div class="success-redirect-note" id="redirectNote">Returning to collection…</div>
+</div>
+
+<header>
+  <div class="brand-rule">
+    <span></span>
+    <svg viewBox="0 0 24 24"><path d="M12 2 L14.5 9.5 L22 9.5 L16 14 L18.5 21.5 L12 17 L5.5 21.5 L8 14 L2 9.5 L9.5 9.5 Z"/></svg>
+    <span></span>
+  </div>
+  <h1>Enter Product</h1>
+  <p>Add a new item to the collection</p>
+  <a href="index.html" class="btn-back">
+    <svg viewBox="0 0 16 16"><line x1="16" y1="8" x2="4" y2="8"/><polyline points="9,3 4,8 9,13"/></svg>
+    Back to Collection
+  </a>
+</header>
+
+<main class="form-wrap">
+
+  <!-- Detected fields from CSV structure: name, tag/category/type, price, image -->
+
+  <div class="form-section-label">Product Details</div>
+
+  <div class="field-group single">
+    <div class="field">
+      <label for="field-name">Product Name</label>
+      <input type="text" id="field-name" name="name" placeholder="e.g. Silk Evening Gown" autocomplete="off" />
+      <div class="field-line"></div>
+    </div>
+  </div>
+
+  <div class="field-group">
+    <div class="field">
+      <label for="field-tag">Category / Tag</label>
+      <input type="text" id="field-tag" name="tag" placeholder="e.g. Apparel" autocomplete="off" />
+      <div class="field-line"></div>
+    </div>
+    <div class="field">
+      <label for="field-price">Price</label>
+      <input type="text" id="field-price" name="price" placeholder="e.g. 480" autocomplete="off" inputmode="decimal" />
+      <div class="field-line"></div>
+    </div>
+  </div>
+
+  <div class="form-section-label" style="margin-top:8px;">Media</div>
+
+  <div class="field-group single">
+    <div class="field">
+      <label for="field-image">Image URL</label>
+      <input type="url" id="field-image" name="image" placeholder="https://…" autocomplete="off" />
+      <div class="field-line"></div>
+    </div>
+  </div>
+
+  <div class="submit-area">
+    <p class="submit-note">
+      Product will appear in the<br>
+      collection after sheet sync
+    </p>
+    <button class="btn-submit" id="submitBtn" type="button" onclick="handleSubmit()">
+      <span>Add to Collection</span>
+      <svg class="btn-arrow" viewBox="0 0 16 16"><line x1="0" y1="8" x2="12" y2="8"/><polyline points="7,3 12,8 7,13"/></svg>
+      <div class="spinner"></div>
+    </button>
+  </div>
+
+</main>
+
+<footer>
+  <p>&copy; 2026 &nbsp;·&nbsp; All rights reserved</p>
+</footer>
+
+<script>
+  // ── Configuration ──────────────────────────────────────────────────────────
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8ekm4kvsXo1zBhWdQezvcLd1hnGhY_ZU_dsqkg0IpA-ywQS9awDrkFsBWMMwUaVc/exec";
+
+  // ── Submit handler ────────────────────────────────────────────────────────
+  async function handleSubmit() {
+    const btn = document.getElementById('submitBtn');
+
+    // Gather field values (keyed by name attribute — matches CSV column names)
+    const fields = document.querySelectorAll('.field input, .field textarea, .field select');
+    const params = new URLSearchParams();
+    let hasName = false;
+
+    fields.forEach(el => {
+      const key = el.name.trim();
+      const val = el.value.trim();
+      if (key) params.set(key, val);
+      if (key === 'name' && val) hasName = true;
+    });
+
+    // Basic validation — name is required
+    if (!hasName) {
+      const nameField = document.getElementById('field-name');
+      nameField.focus();
+      nameField.style.borderBottomColor = '#c0392b';
+      setTimeout(() => { nameField.style.borderBottomColor = ''; }, 2000);
+      return;
+    }
+
+    // Loading state
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.querySelector('span').textContent = 'Submitting…';
+
+    try {
+      const url = `${WEB_APP_URL}?${params.toString()}`;
+      const res = await fetch(url, { method: 'GET', mode: 'no-cors' });
+
+      // no-cors means we can't read the response — treat reach as success
+      showSuccess();
+    } catch (err) {
+      console.error('Submission error:', err);
+      // Re-enable button on network failure
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.querySelector('span').textContent = 'Add to Collection';
+
+      // Inline error message
+      let errMsg = document.getElementById('submitError');
+      if (!errMsg) {
+        errMsg = document.createElement('p');
+        errMsg.id = 'submitError';
+        errMsg.style.cssText = 'font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;color:#c0392b;margin-top:12px;';
+        btn.parentNode.insertBefore(errMsg, btn.nextSibling);
+      }
+      errMsg.textContent = 'Submission failed. Please try again.';
+      setTimeout(() => { if (errMsg) errMsg.remove(); }, 4000);
+    }
+  }
+
+  // ── Success state + redirect ───────────────────────────────────────────────
+  function showSuccess() {
+    const overlay = document.getElementById('successOverlay');
+    overlay.classList.add('visible');
+
+    // Count down and redirect
+    let secs = 3;
+    const note = document.getElementById('redirectNote');
+    note.textContent = `Returning to collection in ${secs}…`;
+
+    const tick = setInterval(() => {
+      secs--;
+      if (secs > 0) {
+        note.textContent = `Returning to collection in ${secs}…`;
+      } else {
+        clearInterval(tick);
+        window.location.href = 'index.html';
+      }
+    }, 1000);
+  }
+
+  // ── Remove red border on focus ─────────────────────────────────────────────
+  document.getElementById('field-name').addEventListener('focus', function() {
+    this.style.borderBottomColor = '';
+  });
+</script>
+
+</body>
+</html>
